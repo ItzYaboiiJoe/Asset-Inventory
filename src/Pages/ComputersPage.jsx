@@ -1,22 +1,26 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const ComputersPage = () => {
   const navigate = useNavigate();
+  const [computersData, setComputersData] = useState([]);
 
-  const computersData = [
-    {
-      AssetTag: "PC96015482",
-      owner: "Wilber",
-      location: "New Tampa",
-      CheckOutDate: "2017-12-18",
-    },
-    {
-      AssetTag: "PC96016849",
-      owner: "John Doe",
-      location: "Gulf to Bay",
-      CheckOutDate: "2018-05-10",
-    },
-  ];
+  useEffect(() => {
+    const fetchComputersData = async () => {
+      const querySnapshot = await getDocs(collection(db, "Computer"));
+      const computers = querySnapshot.docs.map((doc) => ({
+        AssetTag: doc.id,
+        owner: doc.data().owner,
+        location: doc.data().currentLocation,
+        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
+      }));
+      setComputersData(computers);
+    };
+
+    fetchComputersData();
+  }, []);
 
   return (
     <div>
@@ -37,14 +41,26 @@ const ComputersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {computersData.map((item, index) => (
-            <tr key={index} className="text-center border-t">
-              <td className="px-4 py-2">{item.AssetTag}</td>
-              <td className="px-4 py-2">{item.owner}</td>
-              <td className="px-4 py-2">{item.location}</td>
-              <td className="px-4 py-2">{item.CheckOutDate}</td>
+          {computersData.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="text-center py-4">
+                No computers available.
+              </td>
             </tr>
-          ))}
+          ) : (
+            computersData.map((item, index) => (
+              <tr key={index} className="text-center border-t">
+                <td className="px-4 py-2">{item.AssetTag}</td>
+                <td className="px-4 py-2">{item.owner}</td>
+                <td className="px-4 py-2">{item.location}</td>
+                <td className="px-4 py-2">
+                  {item.CheckOutDate
+                    ? item.CheckOutDate.toLocaleDateString()
+                    : "N/A"}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

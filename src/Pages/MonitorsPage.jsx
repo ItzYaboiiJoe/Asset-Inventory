@@ -1,15 +1,26 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const MonitorsPage = () => {
   const navigate = useNavigate();
-  const monitorsData = [
-    {
-      AssetTag: "Dell 24'' Monitor",
-      owner: "Jane Smith",
-      location: "Remote Office",
-      CheckOutDate: "2021-03-16",
-    },
-  ];
+  const [monitorsData, setMonitorsData] = useState([]);
+
+  useEffect(() => {
+    const fetchMonitorsData = async () => {
+      const querySnapshot = await getDocs(collection(db, "Monitor"));
+      const monitors = querySnapshot.docs.map((doc) => ({
+        AssetTag: doc.id,
+        model: doc.data().model,
+        location: doc.data().currentLocation,
+        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
+      }));
+      setMonitorsData(monitors);
+    };
+
+    fetchMonitorsData();
+  }, []);
 
   return (
     <div>
@@ -24,20 +35,32 @@ const MonitorsPage = () => {
         <thead>
           <tr>
             <th className="px-4 py-2">Asset Tag</th>
-            <th className="px-4 py-2">Owner</th>
+            <th className="px-4 py-2">Model</th>
             <th className="px-4 py-2">Location</th>
             <th className="px-4 py-2">Check Out Date</th>
           </tr>
         </thead>
         <tbody>
-          {monitorsData.map((item, index) => (
-            <tr key={index} className="text-center border-t">
-              <td className="px-4 py-2">{item.AssetTag}</td>
-              <td className="px-4 py-2">{item.owner}</td>
-              <td className="px-4 py-2">{item.location}</td>
-              <td className="px-4 py-2">{item.CheckOutDate}</td>
+          {monitorsData.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="text-center py-4">
+                No monitors available.
+              </td>
             </tr>
-          ))}
+          ) : (
+            monitorsData.map((item, index) => (
+              <tr key={index} className="text-center border-t">
+                <td className="px-4 py-2">{item.AssetTag}</td>
+                <td className="px-4 py-2">{item.model}</td>
+                <td className="px-4 py-2">{item.location}</td>
+                <td className="px-4 py-2">
+                  {item.CheckOutDate
+                    ? item.CheckOutDate.toLocaleDateString()
+                    : "N/A"}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

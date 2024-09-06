@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
-  const [selectedPage, setSelectedPage] = useState("computers"); // Default to 'computers'
+  const [selectedPage, setSelectedPage] = useState("computers");
 
   if (!isOpen) return null;
 
