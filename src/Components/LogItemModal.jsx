@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { collection, setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
   const [selectedPage, setSelectedPage] = useState("computers");
@@ -67,18 +69,84 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
             <label className="block text-sm font-medium mb-2">
               Log To Page
             </label>
-            <select
-              value={selectedPage}
-              onChange={(e) => setSelectedPage(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="computers">Computers</option>
-              <option value="servers">Servers</option>
-              <option value="monitors">Monitors</option>
-              <option value="switches">Switches</option>
-              <option value="ipads">iPads</option>
-            </select>
+            <Menu as="div" className="relative inline-block text-left w-full">
+              <div>
+                <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100">
+                  {selectedPage.charAt(0).toUpperCase() + selectedPage.slice(1)}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="-mr-1 h-5 w-5 text-gray-400"
+                  />
+                </MenuButton>
+              </div>
+              <MenuItems
+                transition
+                className="absolute right-0 z-10 mt-2 w-full origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+              >
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setSelectedPage("computers")}
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block px-4 py-2 text-sm w-full text-left`}
+                    >
+                      Computers
+                    </button>
+                  )}
+                </MenuItem>
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setSelectedPage("servers")}
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block px-4 py-2 text-sm w-full text-left`}
+                    >
+                      Servers
+                    </button>
+                  )}
+                </MenuItem>
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setSelectedPage("monitors")}
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block px-4 py-2 text-sm w-full text-left`}
+                    >
+                      Monitors
+                    </button>
+                  )}
+                </MenuItem>
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setSelectedPage("switches")}
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block px-4 py-2 text-sm w-full text-left`}
+                    >
+                      Switches
+                    </button>
+                  )}
+                </MenuItem>
+                <MenuItem>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setSelectedPage("ipads")}
+                      className={`${
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                      } block px-4 py-2 text-sm w-full text-left`}
+                    >
+                      iPads
+                    </button>
+                  )}
+                </MenuItem>
+              </MenuItems>
+            </Menu>
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Asset Tag</label>
             <input
@@ -141,13 +209,13 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+              className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded-lg mr-2 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
             >
               Submit
             </button>
