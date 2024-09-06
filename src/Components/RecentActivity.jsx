@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 const RecentActivity = () => {
@@ -11,7 +11,6 @@ const RecentActivity = () => {
     const fetchRecentActivity = async () => {
       let allActivities = [];
 
-      // Loop through each collection and fetch the items
       for (const collectionName of collections) {
         const q = query(collection(db, collectionName));
         const querySnapshot = await getDocs(q);
@@ -20,8 +19,6 @@ const RecentActivity = () => {
           const data = doc.data();
           const checkInDate = data.checkIn ? data.checkIn.toDate() : null;
           const checkOutDate = data.checkOut ? data.checkOut.toDate() : null;
-
-          // Determine the most recent date (check-in or check-out)
           const latestDate =
             checkInDate > checkOutDate ? checkInDate : checkOutDate;
 
@@ -32,7 +29,7 @@ const RecentActivity = () => {
                 ? data.owner || "N/A"
                 : collectionName === "Monitor"
                 ? data.model || "N/A"
-                : data.serialNumber || "N/A", // Adjust field for each collection
+                : data.serialNumber || "N/A",
             location: data.currentLocation || "N/A",
             checkDate: latestDate ? latestDate.toLocaleString() : "N/A",
             checkType:
@@ -44,10 +41,7 @@ const RecentActivity = () => {
         allActivities = [...allActivities, ...activities];
       }
 
-      // Sort all activities by the check-in/check-out date (descending order)
       allActivities.sort((a, b) => (a.checkDate < b.checkDate ? 1 : -1));
-
-      // Limit to 5 most recent activities
       setActivityData(allActivities.slice(0, 5));
     };
 
@@ -55,7 +49,7 @@ const RecentActivity = () => {
   }, []);
 
   return (
-    <div className="bg-white shadow rounded-lg p-6 mt-6">
+    <div className="bg-white shadow-lg rounded-lg p-6 mt-6">
       <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
       <table className="min-w-full bg-white">
         <thead>

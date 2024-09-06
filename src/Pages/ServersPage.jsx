@@ -35,10 +35,10 @@ const ServersPage = () => {
       <table className="min-w-full bg-white border">
         <thead>
           <tr>
-            <th className="px-4 py-2">Asset Tag</th>
-            <th className="px-4 py-2">Serial Number</th>
-            <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Check Date</th>
+            <th className="px-4 py-3">Asset Tag</th>
+            <th className="px-4 py-3">Serial Number</th>
+            <th className="px-4 py-3">Location</th>
+            <th className="px-4 py-3">Check Date</th>
           </tr>
         </thead>
         <tbody>
@@ -55,11 +55,23 @@ const ServersPage = () => {
                 <td className="px-4 py-2">{item.serialNumber}</td>
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">
-                  {item.location === "DepartmentIT" && item.CheckInDate
-                    ? `Checked In: ${item.CheckInDate.toLocaleDateString()}`
-                    : item.CheckOutDate
-                    ? `Checked Out: ${item.CheckOutDate.toLocaleDateString()}`
-                    : "N/A"}
+                  {item.location === "DepartmentIT" ? (
+                    <>
+                      <span>Checked In</span>
+                      <br />
+                      {item.CheckInDate
+                        ? item.CheckInDate.toLocaleDateString()
+                        : "N/A"}
+                    </>
+                  ) : (
+                    <>
+                      <span>Checked Out</span>
+                      <br />
+                      {item.CheckOutDate
+                        ? item.CheckOutDate.toLocaleDateString()
+                        : "N/A"}
+                    </>
+                  )}
                 </td>
               </tr>
             ))

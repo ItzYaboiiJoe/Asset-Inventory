@@ -35,10 +35,10 @@ const ComputersPage = () => {
       <table className="min-w-full bg-white border">
         <thead>
           <tr>
-            <th className="px-4 py-2">Asset Tag</th>
-            <th className="px-4 py-2">Owner</th>
-            <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Check Date</th>
+            <th className="px-4 py-3">Asset Tag</th>
+            <th className="px-4 py-3">Owner</th>
+            <th className="px-4 py-3">Location</th>
+            <th className="px-4 py-3">Check Date</th>
           </tr>
         </thead>
         <tbody>

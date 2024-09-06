@@ -11,27 +11,29 @@ import IpadsPage from "./pages/IpadsPage";
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <div className="p-6">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div>
-                <Dashboard />
-                <RecentActivity />
-              </div>
-            }
-          />
-          <Route path="/computers" element={<ComputersPage />} />
-          <Route path="/servers" element={<ServersPage />} />
-          <Route path="/monitors" element={<MonitorsPage />} />
-          <Route path="/switches" element={<SwitchesPage />} />
-          <Route path="/ipads" element={<IpadsPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="min-h-screen bg-gray-200">
+      <Router>
+        <Navbar />
+        <div className="p-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div>
+                  <Dashboard />
+                  <RecentActivity />
+                </div>
+              }
+            />
+            <Route path="/computers" element={<ComputersPage />} />
+            <Route path="/servers" element={<ServersPage />} />
+            <Route path="/monitors" element={<MonitorsPage />} />
+            <Route path="/switches" element={<SwitchesPage />} />
+            <Route path="/ipads" element={<IpadsPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </div>
   );
 }
 
