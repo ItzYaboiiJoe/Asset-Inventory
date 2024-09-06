@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Components/Dashboard";
 import RecentActivity from "./Components/RecentActivity";
-import ComputersPage from "./pages/ComputersPage";
-import ServersPage from "./pages/ServersPage";
-import MonitorsPage from "./pages/MonitorsPage";
-import SwitchesPage from "./pages/SwitchesPage";
-import IpadsPage from "./pages/IpadsPage";
+import ComputersPage from "./Pages/ComputersPage";
+import ServersPage from "./Pages/ServersPage";
+import MonitorsPage from "./Pages/MonitorsPage";
+import SwitchesPage from "./Pages/SwitchesPage";
+import IpadsPage from "./Pages/IpadsPage";
 
 function App() {
   return (
