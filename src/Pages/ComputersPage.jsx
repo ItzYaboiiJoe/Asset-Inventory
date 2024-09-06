@@ -15,6 +15,7 @@ const ComputersPage = () => {
         owner: doc.data().owner,
         location: doc.data().currentLocation,
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
+        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
       }));
       setComputersData(computers);
     };
@@ -37,7 +38,7 @@ const ComputersPage = () => {
             <th className="px-4 py-2">Asset Tag</th>
             <th className="px-4 py-2">Owner</th>
             <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Check Out Date</th>
+            <th className="px-4 py-2">Check Date</th>
           </tr>
         </thead>
         <tbody>
@@ -54,9 +55,23 @@ const ComputersPage = () => {
                 <td className="px-4 py-2">{item.owner}</td>
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">
-                  {item.CheckOutDate
-                    ? item.CheckOutDate.toLocaleDateString()
-                    : "N/A"}
+                  {item.location === "DepartmentIT" ? (
+                    <>
+                      <span>Checked In</span>
+                      <br />
+                      {item.CheckInDate
+                        ? item.CheckInDate.toLocaleDateString()
+                        : "N/A"}
+                    </>
+                  ) : (
+                    <>
+                      <span>Checked Out</span>
+                      <br />
+                      {item.CheckOutDate
+                        ? item.CheckOutDate.toLocaleDateString()
+                        : "N/A"}
+                    </>
+                  )}
                 </td>
               </tr>
             ))

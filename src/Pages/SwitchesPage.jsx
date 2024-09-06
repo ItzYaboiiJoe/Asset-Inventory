@@ -14,6 +14,7 @@ const SwitchesPage = () => {
         AssetTag: doc.id,
         serialNumber: doc.data().serialNumber,
         location: doc.data().currentLocation,
+        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setSwitchesData(switches);
@@ -37,7 +38,7 @@ const SwitchesPage = () => {
             <th className="px-4 py-2">Asset Tag</th>
             <th className="px-4 py-2">Serial Number</th>
             <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Last Check In</th>
+            <th className="px-4 py-2">Check Date</th>
           </tr>
         </thead>
         <tbody>
@@ -54,8 +55,10 @@ const SwitchesPage = () => {
                 <td className="px-4 py-2">{item.serialNumber}</td>
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">
-                  {item.CheckOutDate
-                    ? item.CheckOutDate.toLocaleDateString()
+                  {item.location === "DepartmentIT" && item.CheckInDate
+                    ? `Checked In: ${item.CheckInDate.toLocaleDateString()}`
+                    : item.CheckOutDate
+                    ? `Checked Out: ${item.CheckOutDate.toLocaleDateString()}`
                     : "N/A"}
                 </td>
               </tr>

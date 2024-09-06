@@ -14,7 +14,8 @@ const IpadsPage = () => {
         AssetTag: doc.id,
         serialNumber: doc.data().serialNumber,
         location: doc.data().currentLocation,
-        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
+        checkInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
+        checkOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setIpadsData(ipads);
     };
@@ -37,7 +38,7 @@ const IpadsPage = () => {
             <th className="px-4 py-2">Asset Tag</th>
             <th className="px-4 py-2">Serial Number</th>
             <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Check Out Date</th>
+            <th className="px-4 py-2">Check Date</th>
           </tr>
         </thead>
         <tbody>
@@ -54,8 +55,12 @@ const IpadsPage = () => {
                 <td className="px-4 py-2">{item.serialNumber}</td>
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">
-                  {item.CheckOutDate
-                    ? item.CheckOutDate.toLocaleDateString()
+                  {item.location === "DepartmentIT"
+                    ? item.checkInDate
+                      ? `Checked In: ${item.checkInDate.toLocaleDateString()}`
+                      : "N/A"
+                    : item.checkOutDate
+                    ? `Checked Out: ${item.checkOutDate.toLocaleDateString()}`
                     : "N/A"}
                 </td>
               </tr>

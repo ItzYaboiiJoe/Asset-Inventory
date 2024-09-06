@@ -14,6 +14,7 @@ const MonitorsPage = () => {
         AssetTag: doc.id,
         model: doc.data().model,
         location: doc.data().currentLocation,
+        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setMonitorsData(monitors);
@@ -37,7 +38,7 @@ const MonitorsPage = () => {
             <th className="px-4 py-2">Asset Tag</th>
             <th className="px-4 py-2">Model</th>
             <th className="px-4 py-2">Location</th>
-            <th className="px-4 py-2">Check Out Date</th>
+            <th className="px-4 py-2">Check Date</th>
           </tr>
         </thead>
         <tbody>
@@ -54,8 +55,10 @@ const MonitorsPage = () => {
                 <td className="px-4 py-2">{item.model}</td>
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">
-                  {item.CheckOutDate
-                    ? item.CheckOutDate.toLocaleDateString()
+                  {item.location === "DepartmentIT" && item.CheckInDate
+                    ? `Checked In: ${item.CheckInDate.toLocaleDateString()}`
+                    : item.CheckOutDate
+                    ? `Checked Out: ${item.CheckOutDate.toLocaleDateString()}`
                     : "N/A"}
                 </td>
               </tr>

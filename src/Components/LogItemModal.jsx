@@ -1,18 +1,61 @@
 import React, { useState } from "react";
+import { collection, setDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
   const [selectedPage, setSelectedPage] = useState("computers");
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const assetTag = e.target.assetTag.value;
-    const owner = e.target.owner.value;
     const location = e.target.location.value;
+    let value;
 
-    onSubmit({ assetTag, owner, location, page: selectedPage });
-    onClose();
+    if (selectedPage === "computers") {
+      value = e.target.owner.value;
+    } else if (selectedPage === "monitors") {
+      value = e.target.model.value;
+    } else {
+      value = e.target.serialNumber.value;
+    }
+
+    const collectionMap = {
+      computers: "Computer",
+      servers: "Server",
+      monitors: "Monitor",
+      switches: "Switches",
+      ipads: "iPads",
+    };
+
+    const data = {
+      currentLocation: location,
+    };
+
+    // Set the appropriate field for each case
+    if (selectedPage === "computers") {
+      data.owner = value;
+    } else if (selectedPage === "monitors") {
+      data.model = value;
+    } else {
+      data.serialNumber = value;
+    }
+
+    // Add check-in or check-out based on location
+    if (location === "DepartmentIT") {
+      data.checkIn = new Date();
+    } else {
+      data.checkOut = new Date();
+    }
+
+    try {
+      await setDoc(doc(db, collectionMap[selectedPage], assetTag), data);
+      onSubmit({ assetTag, value, location, page: selectedPage });
+      onClose();
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   return (
@@ -46,16 +89,44 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Owner</label>
-            <input
-              type="text"
-              name="owner"
-              placeholder="Owner Name"
-              required
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
+
+          {selectedPage === "computers" ? (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Owner</label>
+              <input
+                type="text"
+                name="owner"
+                placeholder="Owner Name"
+                required
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          ) : selectedPage === "monitors" ? (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Model</label>
+              <input
+                type="text"
+                name="model"
+                placeholder="Monitor Model"
+                required
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          ) : (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Serial Number
+              </label>
+              <input
+                type="text"
+                name="serialNumber"
+                placeholder="Serial Number"
+                required
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          )}
+
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Location</label>
             <input
