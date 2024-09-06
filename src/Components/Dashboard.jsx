@@ -4,19 +4,17 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const Dashboard = () => {
-  // State to store the count of documents for each collection
   const [totalComputers, setTotalComputers] = useState(0);
   const [totalMonitors, setTotalMonitors] = useState(0);
   const [totalServers, setTotalServers] = useState(0);
   const [totalSwitches, setTotalSwitches] = useState(0);
   const [totalIpads, setTotalIpads] = useState(0);
 
-  // Fetch document counts for all collections on component mount using onSnapshot
   useEffect(() => {
     const unsubscribeComputers = onSnapshot(
       collection(db, "Computer"),
       (snapshot) => {
-        setTotalComputers(snapshot.size); // size gives the total number of documents
+        setTotalComputers(snapshot.size);
       }
     );
 

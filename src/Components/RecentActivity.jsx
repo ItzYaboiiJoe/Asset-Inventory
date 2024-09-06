@@ -6,7 +6,7 @@ const RecentActivity = () => {
   const [activityData, setActivityData] = useState([]);
 
   useEffect(() => {
-    const collections = ["Computer", "Monitor", "Server", "Switches", "iPads"]; // Collections to fetch from
+    const collections = ["Computer", "Monitor", "Server", "Switches", "iPads"];
 
     const unsubscribeArray = [];
 

@@ -35,7 +35,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       currentLocation: location,
     };
 
-    // Set the appropriate field for each case
     if (selectedPage === "computers") {
       data.owner = value;
     } else if (selectedPage === "monitors") {
@@ -44,7 +43,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       data.serialNumber = value;
     }
 
-    // Add check-in or check-out based on location
     if (location === "DepartmentIT") {
       data.checkIn = new Date();
     } else {
