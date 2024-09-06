@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const Dashboard = () => {
@@ -11,31 +11,47 @@ const Dashboard = () => {
   const [totalSwitches, setTotalSwitches] = useState(0);
   const [totalIpads, setTotalIpads] = useState(0);
 
-  // Fetch document counts for all collections on component mount
+  // Fetch document counts for all collections on component mount using onSnapshot
   useEffect(() => {
-    const fetchCollectionCounts = async () => {
-      // Fetching and counting documents for 'Computer' collection
-      const computersSnapshot = await getDocs(collection(db, "Computer"));
-      setTotalComputers(computersSnapshot.size); // size gives the total number of documents
+    const unsubscribeComputers = onSnapshot(
+      collection(db, "Computer"),
+      (snapshot) => {
+        setTotalComputers(snapshot.size); // size gives the total number of documents
+      }
+    );
 
-      // Fetching and counting documents for 'Monitor' collection
-      const monitorsSnapshot = await getDocs(collection(db, "Monitor"));
-      setTotalMonitors(monitorsSnapshot.size);
+    const unsubscribeMonitors = onSnapshot(
+      collection(db, "Monitor"),
+      (snapshot) => {
+        setTotalMonitors(snapshot.size);
+      }
+    );
 
-      // Fetching and counting documents for 'Server' collection
-      const serversSnapshot = await getDocs(collection(db, "Server"));
-      setTotalServers(serversSnapshot.size);
+    const unsubscribeServers = onSnapshot(
+      collection(db, "Server"),
+      (snapshot) => {
+        setTotalServers(snapshot.size);
+      }
+    );
 
-      // Fetching and counting documents for 'Switches' collection
-      const switchesSnapshot = await getDocs(collection(db, "Switches"));
-      setTotalSwitches(switchesSnapshot.size);
+    const unsubscribeSwitches = onSnapshot(
+      collection(db, "Switches"),
+      (snapshot) => {
+        setTotalSwitches(snapshot.size);
+      }
+    );
 
-      // Fetching and counting documents for 'iPads' collection
-      const ipadsSnapshot = await getDocs(collection(db, "iPads"));
-      setTotalIpads(ipadsSnapshot.size);
+    const unsubscribeIpads = onSnapshot(collection(db, "iPads"), (snapshot) => {
+      setTotalIpads(snapshot.size);
+    });
+
+    return () => {
+      unsubscribeComputers();
+      unsubscribeMonitors();
+      unsubscribeServers();
+      unsubscribeSwitches();
+      unsubscribeIpads();
     };
-
-    fetchCollectionCounts();
   }, []);
 
   return (

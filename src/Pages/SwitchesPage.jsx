@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const SwitchesPage = () => {
@@ -8,9 +8,8 @@ const SwitchesPage = () => {
   const [switchesData, setSwitchesData] = useState([]);
 
   useEffect(() => {
-    const fetchSwitchesData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Switches"));
-      const switches = querySnapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "Switches"), (snapshot) => {
+      const switches = snapshot.docs.map((doc) => ({
         AssetTag: doc.id,
         serialNumber: doc.data().serialNumber,
         location: doc.data().currentLocation,
@@ -18,9 +17,9 @@ const SwitchesPage = () => {
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setSwitchesData(switches);
-    };
+    });
 
-    fetchSwitchesData();
+    return () => unsubscribe();
   }, []);
 
   return (

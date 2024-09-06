@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const IpadsPage = () => {
@@ -8,9 +8,8 @@ const IpadsPage = () => {
   const [ipadsData, setIpadsData] = useState([]);
 
   useEffect(() => {
-    const fetchIpadsData = async () => {
-      const querySnapshot = await getDocs(collection(db, "iPads"));
-      const ipads = querySnapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "iPads"), (snapshot) => {
+      const ipads = snapshot.docs.map((doc) => ({
         AssetTag: doc.id,
         serialNumber: doc.data().serialNumber,
         location: doc.data().currentLocation,
@@ -18,9 +17,9 @@ const IpadsPage = () => {
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setIpadsData(ipads);
-    };
+    });
 
-    fetchIpadsData();
+    return () => unsubscribe();
   }, []);
 
   return (

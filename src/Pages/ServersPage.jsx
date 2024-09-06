@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const ServersPage = () => {
@@ -8,9 +8,8 @@ const ServersPage = () => {
   const [serversData, setServersData] = useState([]);
 
   useEffect(() => {
-    const fetchServersData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Server"));
-      const servers = querySnapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "Server"), (snapshot) => {
+      const servers = snapshot.docs.map((doc) => ({
         AssetTag: doc.id,
         serialNumber: doc.data().serialNumber,
         location: doc.data().currentLocation,
@@ -18,9 +17,9 @@ const ServersPage = () => {
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setServersData(servers);
-    };
+    });
 
-    fetchServersData();
+    return () => unsubscribe();
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, getDocs } from "firebase/firestore";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const RecentActivity = () => {
@@ -8,44 +8,51 @@ const RecentActivity = () => {
   useEffect(() => {
     const collections = ["Computer", "Monitor", "Server", "Switches", "iPads"]; // Collections to fetch from
 
-    const fetchRecentActivity = async () => {
+    const unsubscribeArray = [];
+
+    const fetchRecentActivity = () => {
       let allActivities = [];
 
-      for (const collectionName of collections) {
+      collections.forEach((collectionName) => {
         const q = query(collection(db, collectionName));
-        const querySnapshot = await getDocs(q);
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const activities = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const checkInDate = data.checkIn ? data.checkIn.toDate() : null;
+            const checkOutDate = data.checkOut ? data.checkOut.toDate() : null;
+            const latestDate =
+              checkInDate > checkOutDate ? checkInDate : checkOutDate;
 
-        const activities = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          const checkInDate = data.checkIn ? data.checkIn.toDate() : null;
-          const checkOutDate = data.checkOut ? data.checkOut.toDate() : null;
-          const latestDate =
-            checkInDate > checkOutDate ? checkInDate : checkOutDate;
+            return {
+              AssetTag: doc.id,
+              value:
+                collectionName === "Computer"
+                  ? data.owner || "N/A"
+                  : collectionName === "Monitor"
+                  ? data.model || "N/A"
+                  : data.serialNumber || "N/A",
+              location: data.currentLocation || "N/A",
+              checkDate: latestDate ? latestDate.toLocaleString() : "N/A",
+              checkType:
+                checkInDate > checkOutDate ? "Checked In" : "Checked Out",
+              collection: collectionName,
+            };
+          });
 
-          return {
-            AssetTag: doc.id,
-            value:
-              collectionName === "Computer"
-                ? data.owner || "N/A"
-                : collectionName === "Monitor"
-                ? data.model || "N/A"
-                : data.serialNumber || "N/A",
-            location: data.currentLocation || "N/A",
-            checkDate: latestDate ? latestDate.toLocaleString() : "N/A",
-            checkType:
-              checkInDate > checkOutDate ? "Checked In" : "Checked Out",
-            collection: collectionName,
-          };
+          allActivities = [...allActivities, ...activities];
+          allActivities.sort((a, b) => (a.checkDate < b.checkDate ? 1 : -1));
+          setActivityData(allActivities.slice(0, 5));
         });
 
-        allActivities = [...allActivities, ...activities];
-      }
-
-      allActivities.sort((a, b) => (a.checkDate < b.checkDate ? 1 : -1));
-      setActivityData(allActivities.slice(0, 5));
+        unsubscribeArray.push(unsubscribe);
+      });
     };
 
     fetchRecentActivity();
+
+    return () => {
+      unsubscribeArray.forEach((unsubscribe) => unsubscribe());
+    };
   }, []);
 
   return (

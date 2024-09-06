@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 const MonitorsPage = () => {
@@ -8,9 +8,8 @@ const MonitorsPage = () => {
   const [monitorsData, setMonitorsData] = useState([]);
 
   useEffect(() => {
-    const fetchMonitorsData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Monitor"));
-      const monitors = querySnapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "Monitor"), (snapshot) => {
+      const monitors = snapshot.docs.map((doc) => ({
         AssetTag: doc.id,
         model: doc.data().model,
         location: doc.data().currentLocation,
@@ -18,9 +17,9 @@ const MonitorsPage = () => {
         CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
       }));
       setMonitorsData(monitors);
-    };
+    });
 
-    fetchMonitorsData();
+    return () => unsubscribe();
   }, []);
 
   return (
