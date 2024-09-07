@@ -59,8 +59,9 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative bg-white p-6 rounded-lg w-full max-w-md shadow-lg z-50">
         <h2 className="text-2xl font-bold mb-4 text-blue-600">Log New Item</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

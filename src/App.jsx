@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Components/Dashboard";
 import RecentActivity from "./Components/RecentActivity";
+import PieChart from "./Components/PieChart";
+import { listenToCollectionCounts } from "./Components/listenToCollectionCounts";
 import ComputersPage from "./Pages/ComputersPage";
 import ServersPage from "./Pages/ServersPage";
 import MonitorsPage from "./Pages/MonitorsPage";
@@ -10,6 +12,18 @@ import SwitchesPage from "./Pages/SwitchesPage";
 import IpadsPage from "./Pages/IpadsPage";
 
 function App() {
+  const [data, setData] = useState([0, 0, 0, 0, 0]);
+  const [totalAssets, setTotalAssets] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = listenToCollectionCounts((assetCounts, totalAssets) => {
+      setData(assetCounts);
+      setTotalAssets(totalAssets);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-200">
       <Router>
@@ -22,6 +36,11 @@ function App() {
                 <div>
                   <Dashboard />
                   <RecentActivity />
+                  <div className="flex justify-between">
+                    <div className="w-1/2">
+                      <PieChart data={data} totalAssets={totalAssets} />
+                    </div>
+                  </div>
                 </div>
               }
             />

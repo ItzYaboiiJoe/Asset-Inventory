@@ -91,7 +91,7 @@ const Navbar = () => {
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <button
             onClick={() => setIsLogModalOpen(true)}
-            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-100"
+            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200"
           >
             Log Item
           </button>
@@ -107,7 +107,7 @@ const Navbar = () => {
           />
           <button
             onClick={handleSearch}
-            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-100"
+            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200"
           >
             Search
           </button>
