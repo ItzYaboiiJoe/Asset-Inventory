@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import LogItemModal from "./LogItemModal";
 import SearchResultModal from "./SearchResultModal";
 import NotFoundModal from "./NotFoundModal";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [searchInput, setSearchInput] = useState("");
@@ -11,18 +12,21 @@ const Navbar = () => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isNotFoundOpen, setIsNotFoundOpen] = useState(false);
   const [searchResult, setSearchResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const collections = ["Computer", "Monitor", "Server", "Switches", "iPads"];
 
   const handleSearchInput = (e) => {
     const value = e.target.value;
-
     if (/^\d*$/.test(value)) {
       setSearchInput(value);
     }
   };
 
   const handleSearch = async () => {
+    if (!searchInput) return;
+    setIsLoading(true);
+
     let foundItem = null;
 
     for (const collectionName of collections) {
@@ -61,6 +65,14 @@ const Navbar = () => {
       setIsSearchModalOpen(true);
     } else {
       setIsNotFoundOpen(true);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && searchInput) {
+      handleSearch();
     }
   };
 
@@ -103,16 +115,32 @@ const Navbar = () => {
             placeholder="Lookup by Asset Tag"
             value={searchInput}
             onChange={handleSearchInput}
+            onKeyDown={handleKeyPress}
             className="p-2 rounded-lg text-black bg-white placeholder-gray-500"
+            disabled={isLoading}
           />
           <button
             onClick={handleSearch}
-            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200"
+            className={`bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200 flex justify-center items-center ${
+              searchInput ? "" : "opacity-50 cursor-not-allowed"
+            }`}
+            disabled={!searchInput || isLoading}
           >
             Search
           </button>
         </div>
       </nav>
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <motion.div
+            className="w-12 h-12 border-4 border-t-transparent border-white rounded-full animate-spin"
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 0.6, ease: "linear", repeat: Infinity }}
+          />
+        </div>
+      )}
 
       <LogItemModal
         isOpen={isLogModalOpen}
