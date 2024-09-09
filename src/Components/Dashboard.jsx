@@ -137,9 +137,9 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      <div className="bg-green-500 p-6 text-white rounded-lg">
+      <div className="relative bg-green-500 p-6 text-white rounded-lg">
         <motion.h2
-          className="text-2xl font-bold"
+          className="text-2xl font-bold relative z-10"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -147,10 +147,15 @@ const Dashboard = () => {
         >
           {totalGary}
         </motion.h2>
-        <p className="text-sm uppercase">Total Gary</p>
-        <Link to="/gary" className="mt-4 text-sm hover:underline">
+        <p className="text-sm uppercase relative z-10">Total Gary</p>
+        <Link to="/gary" className="mt-4 text-sm hover:underline relative z-10">
           More Info
         </Link>
+        <img
+          src="/Gary.png"
+          alt="Gary"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 rounded-lg"
+        />
       </div>
     </div>
   );

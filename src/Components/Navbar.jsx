@@ -14,7 +14,14 @@ const Navbar = () => {
   const [searchResult, setSearchResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const collections = ["Computer", "Monitor", "Server", "Switches", "iPads"];
+  const collections = [
+    "Computer",
+    "Monitor",
+    "Server",
+    "Switches",
+    "iPads",
+    "Gary",
+  ];
 
   const handleSearchInput = (e) => {
     const value = e.target.value;

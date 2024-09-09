@@ -21,7 +21,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       "Switches",
       "iPads",
       "Gary",
-    ]; // Added "Gary"
+    ];
     let assetData = null;
 
     for (const collectionName of collectionsToCheck) {
@@ -41,7 +41,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
           location: existingData.currentLocation,
           collection: collectionName,
         };
-        break; // Exit loop as soon as the asset is found in one collection
+        break;
       }
     }
     return assetData;
@@ -50,31 +50,29 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const assetTag = e.target.assetTag.value;
-    const location = e.target.location.value;
-    let value;
+    const location = e.target.location ? e.target.location.value : null;
+    let data = {};
 
     if (selectedPage === "computers") {
-      value = e.target.owner.value;
-    } else if (selectedPage === "monitors") {
-      value = e.target.model.value;
+      data.owner = e.target.owner.value;
+    } else if (selectedPage === "monitors" || selectedPage === "gary") {
+      data.model = e.target.model.value; // For Gary and monitors, store the model correctly
+      data.serialNumber = e.target.serialNumber.value; // Ensure serialNumber is stored correctly
+      data.type = e.target.type.value; // Store the type for Gary and monitors
     } else {
-      value = e.target.serialNumber.value;
+      data.serialNumber = e.target.serialNumber.value; // Store serialNumber for other categories
     }
 
-    // Check if the asset exists in any collection, including Gary
+    // Check if the asset exists in any collection
     const existingAssetData = await checkAssetInAllCollections(assetTag);
 
     if (existingAssetData) {
-      // If the asset already exists, close LogItemModal and open AssetExistsModal
-      onClose(); // Close LogItemModal
-
-      // Delay to ensure smooth transition
+      onClose();
       setTimeout(() => {
         setExistingAsset(existingAssetData);
-        setAssetExists(true); // Show the AssetExistsModal
-      }, 300); // Adjust the delay to match modal closing animation
+        setAssetExists(true);
+      }, 300);
     } else {
-      // If the asset doesn't exist, proceed with logging
       const collectionMap = {
         computers: "Computer",
         servers: "Server",
@@ -84,28 +82,22 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         gary: "Gary",
       };
 
-      const data = {
-        currentLocation: location,
-      };
-
-      if (selectedPage === "computers") {
-        data.owner = value;
-      } else if (selectedPage === "monitors") {
-        data.model = value;
-      } else {
-        data.serialNumber = value;
+      // Only assign location if it's not Gary
+      if (location) {
+        data.currentLocation = location;
       }
 
-      if (location === "DepartmentIT") {
-        data.checkIn = new Date();
-      } else {
+      // Set checkOut date for Gary or non-DepartmentIT locations
+      if (selectedPage === "gary" || location !== "DepartmentIT") {
         data.checkOut = new Date();
+      } else {
+        data.checkIn = new Date();
       }
 
       try {
         await setDoc(doc(db, collectionMap[selectedPage], assetTag), data);
-        onSubmit({ assetTag, value, location, page: selectedPage });
-        onClose(); // Close the LogItemModal after successful submission
+        onSubmit({ assetTag, value: data.model, location, page: selectedPage });
+        onClose();
       } catch (error) {
         console.error("Error adding document: ", error);
       }
@@ -114,7 +106,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <>
-      {/* Render only if modal is open and assetExists is false */}
       {isOpen && !assetExists && (
         <div className="fixed inset-0 z-40 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-50 "></div>
@@ -272,6 +263,45 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
                     className="w-full p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
+              ) : selectedPage === "gary" ? (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">
+                      Serial Number
+                    </label>
+                    <input
+                      type="text"
+                      name="serialNumber"
+                      placeholder="Serial Number"
+                      required
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">
+                      Model
+                    </label>
+                    <input
+                      type="text"
+                      name="model"
+                      placeholder="Model"
+                      required
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">
+                      Type
+                    </label>
+                    <input
+                      type="text"
+                      name="type"
+                      placeholder="Type"
+                      required
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                </>
               ) : (
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2">
@@ -287,18 +317,22 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
                 </div>
               )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Branch/Department"
-                  required
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
+              {/* Only show Location if selectedPage is NOT Gary */}
+              {selectedPage !== "gary" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    placeholder="Branch/Department"
+                    required
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              )}
+
               <div className="flex justify-end">
                 <button
                   type="button"
@@ -319,7 +353,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
       )}
 
-      {/* Show AssetExistsModal only when assetExists is true */}
       {assetExists && (
         <AssetExistsModal
           isOpen={assetExists}
