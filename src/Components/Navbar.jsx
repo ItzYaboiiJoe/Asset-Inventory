@@ -96,17 +96,17 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold">IT Asset Management</h1>
-        </div>
-
-        <div className="absolute left-1/2 transform -translate-x-1/2">
+        <div>
           <button
             onClick={() => setIsLogModalOpen(true)}
             className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200"
           >
             Log Item
           </button>
+        </div>
+
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <img src="/ITAM.svg" alt="Logo" className="h-16 w-auto" />
         </div>
 
         <div className="flex space-x-4">
