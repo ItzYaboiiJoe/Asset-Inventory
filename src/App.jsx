@@ -4,6 +4,7 @@ import Navbar from "./Components/Navbar";
 import Dashboard from "./Components/Dashboard";
 import RecentActivity from "./Components/RecentActivity";
 import PieChart from "./Components/PieChart";
+import WeeklyGaryLogsChart from "./Components/WeeklyGaryLogsChart";
 import { listenToCollectionCounts } from "./Components/listenToCollectionCounts";
 import ComputersPage from "./Pages/ComputersPage";
 import ServersPage from "./Pages/ServersPage";
@@ -40,6 +41,9 @@ function App() {
                   <div className="flex justify-between">
                     <div className="w-1/2">
                       <PieChart data={data} totalAssets={totalAssets} />
+                    </div>
+                    <div className="w-1/2">
+                      <WeeklyGaryLogsChart />
                     </div>
                   </div>
                 </div>

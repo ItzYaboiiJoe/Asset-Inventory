@@ -106,7 +106,7 @@ const Navbar = () => {
         <div>
           <button
             onClick={() => setIsLogModalOpen(true)}
-            className="bg-white text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-200"
+            className="bg-white text-blue-600 mx-2 px-3 py-2 rounded-lg hover:bg-gray-200"
           >
             Log Item
           </button>
@@ -116,7 +116,7 @@ const Navbar = () => {
           <img src="/ITAM.svg" alt="Logo" className="h-16 w-auto" />
         </div>
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mx-2">
           <input
             type="text"
             placeholder="Lookup by Asset Tag"
@@ -137,7 +137,6 @@ const Navbar = () => {
           </button>
         </div>
       </nav>
-
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <motion.div

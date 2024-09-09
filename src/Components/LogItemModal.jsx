@@ -38,8 +38,8 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       } else {
         // If the asset tag does not exist, show GaryFields
         setShowGaryFields(true);
+        return; // Stop further execution until GaryFields is shown
       }
-      return; // Stop further execution until GaryFields is shown
     }
 
     // After showing GaryFields, the second submit captures additional Gary data
@@ -53,7 +53,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         return;
       }
 
-      // Prepare data for Gary collection (but don't save yet)
+      // Prepare data for Gary collection
       data.model = model;
       data.serialNumber = serialNumber;
       data.type = type;
@@ -63,32 +63,26 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       }
       data.checkOut = new Date(); // Add checkout time for Gary assets
 
-      // If asset was moved, delete from old collection and then save to Gary
-      if (existingAsset) {
-        try {
-          // Delete the asset from its original collection
-          await deleteDoc(
-            doc(db, existingAsset.collection, existingAsset.AssetTag)
-          );
+      try {
+        // Save to the Gary collection
+        await setDoc(doc(db, "Gary", assetTag), data);
 
-          // Save to the Gary collection
-          await setDoc(doc(db, "Gary", assetTag), data);
+        onSubmit({
+          assetTag,
+          value: data.model,
+          location,
+          page: selectedPage,
+        });
 
-          onSubmit({
-            assetTag,
-            value: data.model,
-            location,
-            page: selectedPage,
-          });
-          handleModalClose(
-            onClose,
-            setShowGaryFields,
-            setAssetExists,
-            setShowConfirmation
-          ); // Call the helper function to close modal
-        } catch (error) {
-          console.error("Error deleting or adding document:", error);
-        }
+        // Close modal after successful submission
+        handleModalClose(
+          onClose,
+          setShowGaryFields,
+          setAssetExists,
+          setShowConfirmation
+        );
+      } catch (error) {
+        console.error("Error adding document: ", error);
       }
       return;
     }
@@ -144,7 +138,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         setShowGaryFields,
         setAssetExists,
         setShowConfirmation
-      ); // Call the helper function to close modal
+      );
     } catch (error) {
       console.error("Error adding document: ", error);
     }
