@@ -10,6 +10,7 @@ import ServersPage from "./Pages/ServersPage";
 import MonitorsPage from "./Pages/MonitorsPage";
 import SwitchesPage from "./Pages/SwitchesPage";
 import IpadsPage from "./Pages/IpadsPage";
+import GaryPage from "./Pages/GaryPage";
 
 function App() {
   const [data, setData] = useState([0, 0, 0, 0, 0]);
@@ -49,6 +50,7 @@ function App() {
             <Route path="/monitors" element={<MonitorsPage />} />
             <Route path="/switches" element={<SwitchesPage />} />
             <Route path="/ipads" element={<IpadsPage />} />
+            <Route path="/gary" element={<GaryPage />} />
           </Routes>
         </div>
       </Router>

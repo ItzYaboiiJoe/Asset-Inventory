@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [totalServers, setTotalServers] = useState(0);
   const [totalSwitches, setTotalSwitches] = useState(0);
   const [totalIpads, setTotalIpads] = useState(0);
+  const [totalGary, setTotalGary] = useState(0);
 
   useEffect(() => {
     const unsubscribeComputers = onSnapshot(
@@ -44,17 +45,22 @@ const Dashboard = () => {
       setTotalIpads(snapshot.size);
     });
 
+    const unsubscribeGary = onSnapshot(collection(db, "Gary"), (snapshot) => {
+      setTotalGary(snapshot.size);
+    });
+
     return () => {
       unsubscribeComputers();
       unsubscribeMonitors();
       unsubscribeServers();
       unsubscribeSwitches();
       unsubscribeIpads();
+      unsubscribeGary();
     };
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
       <div className="bg-teal-500 p-6 text-white rounded-lg">
         <motion.h2
           className="text-2xl font-bold"
@@ -127,6 +133,22 @@ const Dashboard = () => {
         </motion.h2>
         <p className="text-sm uppercase">Total iPads</p>
         <Link to="/ipads" className="mt-4 text-sm hover:underline">
+          More Info
+        </Link>
+      </div>
+
+      <div className="bg-green-500 p-6 text-white rounded-lg">
+        <motion.h2
+          className="text-2xl font-bold"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+          key={totalGary}
+        >
+          {totalGary}
+        </motion.h2>
+        <p className="text-sm uppercase">Total Gary</p>
+        <Link to="/gary" className="mt-4 text-sm hover:underline">
           More Info
         </Link>
       </div>
