@@ -16,7 +16,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
   const [assetExists, setAssetExists] = useState(false);
   const [existingAsset, setExistingAsset] = useState(null);
   const [showGaryFields, setShowGaryFields] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false); // State for confirmation modal
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,8 +38,8 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       } else {
         // If the asset tag does not exist, show GaryFields
         setShowGaryFields(true);
-        return; // Stop further execution until GaryFields is shown
       }
+      return; // Stop further execution until GaryFields is shown
     }
 
     // After showing GaryFields, the second submit captures additional Gary data
@@ -53,7 +53,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         return;
       }
 
-      // Prepare data for Gary collection
+      // Prepare data for Gary collection (but don't save yet)
       data.model = model;
       data.serialNumber = serialNumber;
       data.type = type;
@@ -63,26 +63,32 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       }
       data.checkOut = new Date(); // Add checkout time for Gary assets
 
-      try {
-        // Save to the Gary collection
-        await setDoc(doc(db, "Gary", assetTag), data);
+      // If asset was moved, delete from old collection and then save to Gary
+      if (existingAsset) {
+        try {
+          // Delete the asset from its original collection
+          await deleteDoc(
+            doc(db, existingAsset.collection, existingAsset.AssetTag)
+          );
 
-        onSubmit({
-          assetTag,
-          value: data.model,
-          location,
-          page: selectedPage,
-        });
+          // Save to the Gary collection
+          await setDoc(doc(db, "Gary", assetTag), data);
 
-        // Close modal after successful submission
-        handleModalClose(
-          onClose,
-          setShowGaryFields,
-          setAssetExists,
-          setShowConfirmation
-        );
-      } catch (error) {
-        console.error("Error adding document: ", error);
+          onSubmit({
+            assetTag,
+            value: data.model,
+            location,
+            page: selectedPage,
+          });
+          handleModalClose(
+            onClose,
+            setShowGaryFields,
+            setAssetExists,
+            setShowConfirmation
+          ); // Call the helper function to close modal
+        } catch (error) {
+          console.error("Error deleting or adding document:", error);
+        }
       }
       return;
     }
@@ -138,7 +144,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         setShowGaryFields,
         setAssetExists,
         setShowConfirmation
-      );
+      ); // Call the helper function to close modal
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -189,7 +195,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
                 selectedPage !== "gary" && <OtherFields />}
 
               <div className="flex justify-end">
-                {/* If Gary Fields are being shown, the user can't cancel */}
                 {!showGaryFields && (
                   <button
                     type="button"
@@ -200,7 +205,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
                         setAssetExists,
                         setShowConfirmation
                       )
-                    } // Call the helper
+                    }
                     className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded-lg mr-2 transition"
                   >
                     Cancel
@@ -218,7 +223,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
       )}
 
-      {/* Display confirmation modal for moving asset */}
       {showConfirmation && (
         <ConfirmationModal
           isOpen={showConfirmation}
@@ -230,8 +234,8 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
               setAssetExists,
               setShowConfirmation
             )
-          } // Call the helper
-          assetData={existingAsset} // Pass the existing asset data to the confirmation modal
+          }
+          assetData={existingAsset}
         />
       )}
     </>
