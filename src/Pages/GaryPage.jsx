@@ -22,15 +22,63 @@ const GaryPage = () => {
     return () => unsubscribe();
   }, []);
 
+  // Function to convert data to CSV and download it
+  const exportToCSV = () => {
+    const headers = [
+      "Asset Tag",
+      "Serial Number",
+      "Model",
+      "Type",
+      "Check Date",
+    ];
+    const rows = garyData.map((item) => [
+      item.AssetTag,
+      item.serialNumber,
+      item.model,
+      item.type,
+      item.checkOut ? item.checkOut.toLocaleDateString() : "N/A",
+    ]);
+
+    // Create CSV content
+    const csvContent = [
+      headers.join(","), // Add headers
+      ...rows.map((row) => row.join(",")), // Add rows
+    ].join("\n");
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link and trigger download
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "gary_assets.csv"); // Set download filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Gary</h2>
-      <button
-        onClick={() => navigate(-1)}
-        className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg mb-4 transition-colors"
-      >
-        Back
-      </button>
+
+      <div className="flex justify-between mb-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Back
+        </button>
+
+        {/* Export to CSV button*/}
+        <button
+          onClick={exportToCSV}
+          className="bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Export to CSV
+        </button>
+      </div>
+
       <table className="min-w-full bg-white border">
         <thead>
           <tr>
