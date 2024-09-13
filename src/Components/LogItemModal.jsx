@@ -25,7 +25,7 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
     const location = e.target.location ? e.target.location.value : null;
     let data = {};
 
-    // First step: search for asset tag when "gary" is selected
+    // Check if asset exists in another collection
     if (selectedPage === "gary" && !showGaryFields) {
       const { assetData, foundInCollection } = await checkAssetInAllCollections(
         assetTag
@@ -36,10 +36,9 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         setShowConfirmation(true); // Show the confirmation modal
         return;
       } else {
-        // If the asset tag does not exist, show GaryFields
         setShowGaryFields(true);
+        return;
       }
-      return; // Stop further execution until GaryFields is shown
     }
 
     // After showing GaryFields, the second submit captures additional Gary data
@@ -53,7 +52,6 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         return;
       }
 
-      // Prepare data for Gary collection (but don't save yet)
       data.model = model;
       data.serialNumber = serialNumber;
       data.type = type;
@@ -63,37 +61,37 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
       }
       data.checkOut = new Date(); // Add checkout time for Gary assets
 
-      // If asset was moved, delete from old collection and then save to Gary
-      if (existingAsset) {
-        try {
-          // Delete the asset from its original collection
+      try {
+        // If asset exists in another collection, delete it before adding to Gary
+        if (existingAsset) {
           await deleteDoc(
             doc(db, existingAsset.collection, existingAsset.AssetTag)
           );
-
-          // Save to the Gary collection
-          await setDoc(doc(db, "Gary", assetTag), data);
-
-          onSubmit({
-            assetTag,
-            value: data.model,
-            location,
-            page: selectedPage,
-          });
-          handleModalClose(
-            onClose,
-            setShowGaryFields,
-            setAssetExists,
-            setShowConfirmation
-          ); // Call the helper function to close modal
-        } catch (error) {
-          console.error("Error deleting or adding document:", error);
         }
+
+        // Save the asset to Gary collection
+        await setDoc(doc(db, "Gary", assetTag), data);
+
+        onSubmit({
+          assetTag,
+          value: data.model,
+          location,
+          page: selectedPage,
+        });
+
+        handleModalClose(
+          onClose,
+          setShowGaryFields,
+          setAssetExists,
+          setShowConfirmation
+        );
+      } catch (error) {
+        console.error("Error deleting or adding document:", error);
       }
       return;
     }
 
-    // Handle other categories like computers, monitors, etc.
+    // Handle other categories (e.g., computers, monitors)
     if (selectedPage === "computers") {
       data.owner = e.target.owner?.value;
     } else if (selectedPage === "monitors") {
@@ -139,12 +137,13 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
         location,
         page: selectedPage,
       });
+
       handleModalClose(
         onClose,
         setShowGaryFields,
         setAssetExists,
         setShowConfirmation
-      ); // Call the helper function to close modal
+      );
     } catch (error) {
       console.error("Error adding document: ", error);
     }
