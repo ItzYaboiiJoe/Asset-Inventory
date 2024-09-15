@@ -9,13 +9,18 @@ const ComputersPage = () => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "Computer"), (snapshot) => {
-      const computers = snapshot.docs.map((doc) => ({
-        AssetTag: doc.id,
-        owner: doc.data().owner,
-        location: doc.data().currentLocation,
-        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
-        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
-      }));
+      const computers = snapshot.docs
+        .map((doc) => ({
+          AssetTag: doc.id,
+          owner: doc.data().owner,
+          location: doc.data().currentLocation,
+          CheckOutDate: doc.data().checkOut
+            ? doc.data().checkOut.toDate()
+            : null,
+          CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
+        }))
+        // Sort by AssetTag as numeric values
+        .sort((a, b) => Number(a.AssetTag) - Number(b.AssetTag));
       setComputersData(computers);
     });
 

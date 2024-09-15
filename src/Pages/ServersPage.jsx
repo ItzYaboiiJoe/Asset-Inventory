@@ -9,13 +9,18 @@ const ServersPage = () => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "Server"), (snapshot) => {
-      const servers = snapshot.docs.map((doc) => ({
-        AssetTag: doc.id,
-        serialNumber: doc.data().serialNumber,
-        location: doc.data().currentLocation,
-        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
-        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
-      }));
+      const servers = snapshot.docs
+        .map((doc) => ({
+          AssetTag: doc.id,
+          serialNumber: doc.data().serialNumber,
+          location: doc.data().currentLocation,
+          CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
+          CheckOutDate: doc.data().checkOut
+            ? doc.data().checkOut.toDate()
+            : null,
+        }))
+        // Sort by AssetTag as numeric values
+        .sort((a, b) => Number(a.AssetTag) - Number(b.AssetTag));
       setServersData(servers);
     });
 

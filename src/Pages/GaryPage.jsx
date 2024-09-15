@@ -9,13 +9,16 @@ const GaryPage = () => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "Gary"), (snapshot) => {
-      const assets = snapshot.docs.map((doc) => ({
-        AssetTag: doc.id,
-        serialNumber: doc.data().serialNumber,
-        model: doc.data().model,
-        type: doc.data().type,
-        checkOut: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
-      }));
+      const assets = snapshot.docs
+        .map((doc) => ({
+          AssetTag: doc.id,
+          serialNumber: doc.data().serialNumber,
+          model: doc.data().model,
+          type: doc.data().type,
+          checkOut: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
+        }))
+        // Sort by AssetTag as numeric values
+        .sort((a, b) => Number(a.AssetTag) - Number(b.AssetTag));
       setGaryData(assets);
     });
 

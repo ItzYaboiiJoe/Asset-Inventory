@@ -9,13 +9,18 @@ const MonitorsPage = () => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "Monitor"), (snapshot) => {
-      const monitors = snapshot.docs.map((doc) => ({
-        AssetTag: doc.id,
-        model: doc.data().model,
-        location: doc.data().currentLocation,
-        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
-        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
-      }));
+      const monitors = snapshot.docs
+        .map((doc) => ({
+          AssetTag: doc.id,
+          model: doc.data().model,
+          location: doc.data().currentLocation,
+          CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
+          CheckOutDate: doc.data().checkOut
+            ? doc.data().checkOut.toDate()
+            : null,
+        }))
+        // Sort by AssetTag as numeric values
+        .sort((a, b) => Number(a.AssetTag) - Number(b.AssetTag));
       setMonitorsData(monitors);
     });
 

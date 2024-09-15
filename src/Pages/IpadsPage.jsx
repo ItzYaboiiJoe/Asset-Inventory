@@ -9,13 +9,18 @@ const IpadsPage = () => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "iPads"), (snapshot) => {
-      const ipads = snapshot.docs.map((doc) => ({
-        AssetTag: doc.id,
-        serialNumber: doc.data().serialNumber,
-        location: doc.data().currentLocation,
-        CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
-        CheckOutDate: doc.data().checkOut ? doc.data().checkOut.toDate() : null,
-      }));
+      const ipads = snapshot.docs
+        .map((doc) => ({
+          AssetTag: doc.id,
+          serialNumber: doc.data().serialNumber,
+          location: doc.data().currentLocation,
+          CheckInDate: doc.data().checkIn ? doc.data().checkIn.toDate() : null,
+          CheckOutDate: doc.data().checkOut
+            ? doc.data().checkOut.toDate()
+            : null,
+        }))
+        // Sort by AssetTag as numeric values
+        .sort((a, b) => Number(a.AssetTag) - Number(b.AssetTag));
       setIpadsData(ipads);
     });
 

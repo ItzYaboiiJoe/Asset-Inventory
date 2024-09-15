@@ -84,7 +84,6 @@ const Navbar = () => {
   };
 
   const handleLogItemSubmit = (data) => {
-    console.log("Logged Item Data:", data);
     setIsLogModalOpen(false);
   };
 
