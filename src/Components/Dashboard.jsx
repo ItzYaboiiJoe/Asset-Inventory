@@ -151,11 +151,11 @@ const Dashboard = () => {
         <Link to="/gary" className="mt-4 text-sm hover:underline relative z-10">
           More Info
         </Link>
-        <img
+        {/* <img
           src="/Gary.png"
           alt="Gary"
           className="absolute inset-0 w-full h-full object-cover opacity-20 rounded-lg"
-        />
+        /> */}
       </div>
     </div>
   );
