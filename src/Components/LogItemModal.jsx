@@ -8,6 +8,7 @@ import GaryFields from "../Forms/GaryFields";
 import OtherFields from "../Forms/OtherFields";
 import LocationField from "../Forms/LocationField";
 import ConfirmationModal from "./ConfirmationModal";
+import AssetExistsModal from "./AssetExistsModal";
 import { checkAssetInAllCollections } from "./checkAssetHelper";
 import { handleModalClose } from "./modalHelper";
 
@@ -26,14 +27,23 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
     let data = {};
 
     // Check if asset exists in another collection
-    if (selectedPage === "gary" && !showGaryFields) {
-      const { assetData, foundInCollection } = await checkAssetInAllCollections(
-        assetTag
-      );
+    const { assetData, foundInCollection } = await checkAssetInAllCollections(
+      assetTag
+    );
 
+    // If the asset exists and is not in "Gary", show the AssetExistsModal and stop the process
+    if (assetData && selectedPage !== "gary") {
+      setExistingAsset(assetData);
+      setAssetExists(true);
+      onClose();
+      return;
+    }
+
+    // If asset exists in "Gary" collection, handle confirmation for moving to "Gary"
+    if (selectedPage === "gary" && !showGaryFields) {
       if (assetData) {
         setExistingAsset(assetData);
-        setShowConfirmation(true); // Show the confirmation modal
+        setShowConfirmation(true); // Show the confirmation modal for Gary collection
         return;
       } else {
         setShowGaryFields(true);
@@ -235,6 +245,17 @@ const LogItemModal = ({ isOpen, onClose, onSubmit }) => {
             )
           }
           assetData={existingAsset}
+        />
+      )}
+
+      {assetExists && (
+        <AssetExistsModal
+          isOpen={assetExists}
+          onClose={() => {
+            setAssetExists(false);
+            setExistingAsset(null);
+          }}
+          existingAsset={existingAsset}
         />
       )}
     </>
